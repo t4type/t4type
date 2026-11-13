@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="T4Type is a free, minimalist, distraction-free typing practice experience." />
+    <meta name="theme-color" content="#181818" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>T4Type &mdash; Minimalist Typing Practice</title>
+    <script>
+      (function() {
+        try {
+          var theme = localStorage.getItem('t4type-theme');
+          if (theme === 'light') {
+            document.documentElement.classList.add('light');
+            document.documentElement.classList.remove('dark');
+            document.documentElement.setAttribute('data-theme', 'light');
+          } else {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+            document.documentElement.setAttribute('data-theme', 'dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
