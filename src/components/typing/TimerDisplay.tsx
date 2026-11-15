@@ -1,58 +1,55 @@
 import React from 'react';
-import { Check } from 'lucide-react';
+import { Check, Volume2, VolumeX } from 'lucide-react';
 import { formatTime } from '../../utils/format';
+import { initAudioContext } from '../../utils/sound';
 import type { PracticeConfig } from '../../types/typing';
 
 interface TimerDisplayProps {
   config: PracticeConfig;
   remainingSeconds: number;
   hasStarted: boolean;
-  isFocused: boolean;
-  isCompleted: boolean;
   typedText: string;
   targetText: string;
+  sound: boolean;
+  onToggleSound: () => void;
   onFinishZen: () => void;
+  currentWordIndex?: number;
+  totalWordsCount?: number;
 }
 
 export const TimerDisplay: React.FC<TimerDisplayProps> = ({
   config,
   remainingSeconds,
   hasStarted,
-  isFocused,
-  isCompleted,
   typedText,
   targetText,
+  sound,
+  onToggleSound,
   onFinishZen,
+  currentWordIndex,
+  totalWordsCount,
 }) => {
-  const statusLine = !hasStarted ? (
-    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs sm:text-sm font-sans mt-1">
-      <span
-        className="w-2 h-2 rounded-full bg-accent shrink-0"
-        aria-hidden="true"
-      />
-      <span className="font-semibold text-primary">Ready when you are.</span>
-      <span className="text-secondary">
-        Start typing to begin your session.
-      </span>
-      {!isFocused && !isCompleted && (
-        <span className="text-xs font-medium text-accent ml-1">
-          &middot; Click or tap to focus
-        </span>
+  const handleToggleSound = () => {
+    initAudioContext();
+    onToggleSound();
+  };
+
+  const soundToggleButton = (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={sound}
+      onClick={handleToggleSound}
+      aria-label={sound ? 'Keyboard sound: On' : 'Keyboard sound: Off'}
+      title={sound ? 'Keyboard sound: On' : 'Keyboard sound: Off'}
+      className="p-1.5 -ml-1 rounded-lg text-secondary hover:text-primary hover:bg-surface/80 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent flex items-center justify-center min-w-[32px] min-h-[32px]"
+    >
+      {sound ? (
+        <Volume2 className="w-4 h-4 sm:w-5 sm:h-5 text-accent" aria-hidden="true" />
+      ) : (
+        <VolumeX className="w-4 h-4 sm:w-5 sm:h-5 text-secondary hover:text-primary" aria-hidden="true" />
       )}
-    </div>
-  ) : (
-    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs sm:text-sm font-sans mt-1">
-      <span
-        className="w-2 h-2 rounded-full bg-accent shrink-0"
-        aria-hidden="true"
-      />
-      <span className="text-secondary">Session active</span>
-      {!isFocused && !isCompleted && (
-        <span className="text-xs font-medium text-accent ml-1">
-          &middot; Click or tap to focus
-        </span>
-      )}
-    </div>
+    </button>
   );
 
   if (config.mode === 'time') {
@@ -64,12 +61,9 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
 
     return (
       <div className="w-full select-none" aria-live="polite">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <span className="block text-[11px] font-sans font-medium uppercase tracking-widest text-secondary">
-              Time remaining
-            </span>
-            {statusLine}
+        <div className="flex items-center justify-between gap-3 min-h-[40px]">
+          <div className="flex items-center">
+            {soundToggleButton}
           </div>
 
           <span
@@ -94,20 +88,19 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
     );
   }
 
-  const typedWords = typedText.trim()
+  const typedWordsCount = typedText.trim()
     ? typedText.trimEnd().split(/\s+/).length
     : 0;
 
   if (config.mode === 'zen') {
     return (
       <div className="w-full select-none">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <span className="block text-[11px] font-sans font-medium uppercase tracking-widest text-secondary">
-              Zen mode &middot; {typedWords}{' '}
-              {typedWords === 1 ? 'word' : 'words'}
+        <div className="flex items-center justify-between gap-3 min-h-[40px]">
+          <div className="flex items-center gap-2.5">
+            {soundToggleButton}
+            <span className="text-[11px] font-sans font-medium uppercase tracking-widest text-secondary">
+              Zen mode &middot; {typedWordsCount} {typedWordsCount === 1 ? 'word' : 'words'}
             </span>
-            {statusLine}
           </div>
 
           {hasStarted && (
@@ -129,10 +122,11 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
   }
 
   // Words, Quotes, Custom: clean word progress + accent progress bar
-  const totalWords = targetText ? targetText.trim().split(/\s+/).length : 0;
+  const totalWords = totalWordsCount ?? (targetText ? targetText.trim().split(/\s+/).length : 0);
+  const completedWords = currentWordIndex !== undefined ? currentWordIndex : typedWordsCount;
   const progressPercent =
-    targetText.length > 0
-      ? Math.min(100, Math.round((typedText.length / targetText.length) * 100))
+    totalWords > 0
+      ? Math.min(100, Math.round((completedWords / totalWords) * 100))
       : 0;
 
   const modeMetaLabel =
@@ -144,17 +138,17 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
 
   return (
     <div className="w-full select-none">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <span className="block text-[11px] font-sans font-medium uppercase tracking-widest text-secondary">
+      <div className="flex items-center justify-between gap-3 min-h-[40px]">
+        <div className="flex items-center gap-2.5">
+          {soundToggleButton}
+          <span className="text-[11px] font-sans font-medium uppercase tracking-widest text-secondary">
             {modeMetaLabel}
           </span>
-          {statusLine}
         </div>
 
         {totalWords > 0 && (
           <span className="font-mono tabular-nums text-xl sm:text-2xl font-bold text-accent">
-            {typedWords} / {totalWords}{' '}
+            {completedWords} / {totalWords}{' '}
             <span className="text-xs sm:text-sm font-sans font-medium text-secondary">
               words
             </span>
@@ -172,7 +166,7 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
       >
         <div
           className="h-full bg-accent rounded-full transition-all duration-150"
-          style={{ width: `${hasStarted ? progressPercent : 100}%` }}
+          style={{ width: `${hasStarted ? progressPercent : 0}%` }}
         />
       </div>
     </div>

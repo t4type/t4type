@@ -304,15 +304,25 @@ export const App: React.FC = () => {
                 {/* Unified Typing Card: Timer Header + Accent Bar + Typing Surface */}
                 <TypingArea
                   targetText={engine.targetText}
+                  targetWords={engine.targetWords}
+                  typedWords={engine.typedWords}
+                  currentWordIndex={engine.currentWordIndex}
+                  currentInput={engine.currentInput}
+                  wordStatuses={engine.wordStatuses}
                   typedText={engine.typedText}
                   currentIndex={engine.currentIndex}
                   isCompleted={engine.isCompleted}
                   isZenMode={config.mode === 'zen'}
+                  zenTypedText={engine.zenTypedText}
                   quoteAuthor={
                     config.mode === 'quotes' ? engine.activeQuote?.author : undefined
                   }
                   fontSize={settings.fontSize}
                   isModalOpen={isSettingsOpen}
+                  onWordChange={engine.handleWordChange}
+                  onSpacePress={engine.handleSpacePress}
+                  onBackspaceAtWordStart={engine.handleBackspaceAtWordStart}
+                  onZenChange={engine.handleZenChange}
                   onTextChange={engine.handleTextChange}
                   onRestart={engine.newTest}
                   onFocusChange={setIsTypingFocused}
@@ -322,11 +332,13 @@ export const App: React.FC = () => {
                       config={config}
                       remainingSeconds={engine.remainingSeconds}
                       hasStarted={engine.hasStarted}
-                      isFocused={isTypingFocused}
-                      isCompleted={engine.isCompleted}
                       typedText={engine.typedText}
                       targetText={engine.targetText}
+                      sound={settings.sound}
+                      onToggleSound={toggleSound}
                       onFinishZen={engine.finishZenTest}
+                      currentWordIndex={engine.currentWordIndex}
+                      totalWordsCount={engine.targetWords.length}
                     />
                   }
                 />

@@ -7,6 +7,9 @@ interface TypingCharacterProps {
   isCurrent: boolean;
   isCompleted: boolean;
   isInActiveWord?: boolean;
+  isSkipped?: boolean;
+  isExtra?: boolean;
+  isAtEnd?: boolean;
   activeRef?: React.RefObject<HTMLSpanElement | null>;
 }
 
@@ -17,10 +20,15 @@ export const TypingCharacter: React.FC<TypingCharacterProps> = React.memo(
     isCurrent,
     isCompleted,
     isInActiveWord = false,
+    isSkipped = false,
+    isExtra = false,
+    isAtEnd = false,
     activeRef,
   }) => {
     let state: CharacterState = 'untyped';
-    if (typedChar !== undefined) {
+    if (isExtra) {
+      state = 'incorrect';
+    } else if (typedChar !== undefined) {
       state = typedChar === targetChar ? 'correct' : 'incorrect';
     }
 
@@ -32,15 +40,18 @@ export const TypingCharacter: React.FC<TypingCharacterProps> = React.memo(
       : 'text-[#6B7280] dark:text-[#9CA3AF]';
     let displayContent = isSpace ? '\u00A0' : targetChar;
 
-    if (state === 'correct') {
+    if (isExtra && typedChar) {
+      displayContent = typedChar;
+      colorClass = 'text-error opacity-80 underline decoration-current bg-error-bg rounded-[2px]';
+    } else if (state === 'correct') {
       colorClass = 'text-correct font-normal';
     } else if (state === 'incorrect') {
-      colorClass =
-        'text-error underline decoration-current bg-error-bg rounded-[2px]';
+      colorClass = 'text-error underline decoration-current bg-error-bg rounded-[2px]';
       if (isSpace && typedChar) {
-        // If user typed a visible character instead of space, show what was typed with error styling
         displayContent = typedChar;
       }
+    } else if (isSkipped) {
+      colorClass = 'text-[#6B7280] dark:text-[#9CA3AF] opacity-50';
     }
 
     return (
@@ -48,10 +59,12 @@ export const TypingCharacter: React.FC<TypingCharacterProps> = React.memo(
         ref={isCurrent ? activeRef : undefined}
         className="relative inline-block select-none transition-colors duration-75"
       >
-        {/* Dynamic Caret tracking current character position */}
+        {/* Dynamic Caret tracking current typing position */}
         {isCurrent && !isCompleted && (
           <span
-            className="absolute -left-[1px] top-[12%] bottom-[12%] w-[2px] bg-accent rounded-full animate-caret pointer-events-none z-10"
+            className={`absolute ${
+              isAtEnd ? '-right-[1px]' : '-left-[1px]'
+            } top-[10%] bottom-[10%] w-[2px] bg-accent rounded-full animate-caret pointer-events-none z-10`}
             aria-hidden="true"
           />
         )}

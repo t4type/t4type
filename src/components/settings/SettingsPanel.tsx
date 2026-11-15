@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { X, Volume2, VolumeX, Sun, Moon } from 'lucide-react';
+import { initAudioContext } from '../../utils/sound';
 import type { Theme } from '../../types/theme';
 import type { Difficulty, FontSize, PracticeSettings } from '../../types/typing';
 
@@ -145,7 +146,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             </span>
             <button
               type="button"
-              onClick={onToggleSound}
+              onClick={() => {
+                initAudioContext();
+                onToggleSound();
+              }}
               aria-pressed={settings.sound}
               className={`w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-sans border transition-colors min-h-[42px] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                 settings.sound

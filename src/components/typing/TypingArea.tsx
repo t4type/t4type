@@ -1,23 +1,30 @@
 import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { RotateCcw } from 'lucide-react';
 import { TypingCharacter } from './TypingCharacter';
+import { initAudioContext } from '../../utils/sound';
 import type { FontSize } from '../../types/typing';
-
-interface WordToken {
-  word: string;
-  startIndex: number;
-}
+import type { WordStatus } from '../../hooks/useTypingEngine';
 
 interface TypingAreaProps {
   targetText: string;
+  targetWords?: string[];
+  typedWords?: string[];
+  currentWordIndex?: number;
+  currentInput?: string;
+  wordStatuses?: WordStatus[];
   typedText: string;
   currentIndex: number;
   isCompleted: boolean;
   isZenMode: boolean;
+  zenTypedText?: string;
   quoteAuthor?: string;
   fontSize: FontSize;
   isModalOpen: boolean;
-  onTextChange: (val: string) => void;
+  onWordChange?: (val: string) => void;
+  onSpacePress?: () => void;
+  onBackspaceAtWordStart?: () => void;
+  onZenChange?: (val: string) => void;
+  onTextChange?: (val: string) => void;
   onRestart: () => void;
   onFocusChange?: (focused: boolean) => void;
   headerSlot?: React.ReactNode;
@@ -34,13 +41,23 @@ const FONT_SIZE_CLASSES: Record<FontSize, string> = {
 
 export const TypingArea: React.FC<TypingAreaProps> = ({
   targetText,
+  targetWords,
+  typedWords = [],
+  currentWordIndex = 0,
+  currentInput = '',
+  wordStatuses = [],
   typedText,
   currentIndex,
   isCompleted,
   isZenMode,
+  zenTypedText = '',
   quoteAuthor,
   fontSize,
   isModalOpen,
+  onWordChange,
+  onSpacePress,
+  onBackspaceAtWordStart,
+  onZenChange,
   onTextChange,
   onRestart,
   onFocusChange,
@@ -69,10 +86,10 @@ export const TypingArea: React.FC<TypingAreaProps> = ({
 
   // Reset scroll when targetText or typedText clears
   useEffect(() => {
-    if (typedText.length === 0 && textViewportRef.current) {
+    if (typedText.length === 0 && currentWordIndex === 0 && textViewportRef.current) {
       textViewportRef.current.scrollTop = 0;
     }
-  }, [typedText.length, targetText]);
+  }, [typedText.length, currentWordIndex, targetText]);
 
   // Smoothly keep active character line visible inside scrollable viewport
   useEffect(() => {
@@ -96,7 +113,7 @@ export const TypingArea: React.FC<TypingAreaProps> = ({
         behavior: 'smooth',
       });
     }
-  }, [currentIndex, targetText, typedText]);
+  }, [currentWordIndex, currentInput, currentIndex, targetText]);
 
   useEffect(() => {
     return () => {
@@ -115,6 +132,7 @@ export const TypingArea: React.FC<TypingAreaProps> = ({
 
   const handleContainerClick = () => {
     if (isCompleted) return;
+    initAudioContext();
     inputRef.current?.focus();
     ensureCursorAtEnd();
   };
@@ -132,6 +150,9 @@ export const TypingArea: React.FC<TypingAreaProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    initAudioContext();
+
+    // Restart shortcut: Tab + Enter
     if (e.key === 'Tab') {
       e.preventDefault();
       setTabArmed(true);
@@ -156,6 +177,7 @@ export const TypingArea: React.FC<TypingAreaProps> = ({
       setTabArmed(false);
     }
 
+    // Prevent navigation keys from displacing hidden input cursor
     if (
       e.key === 'ArrowLeft' ||
       e.key === 'ArrowRight' ||
@@ -165,37 +187,80 @@ export const TypingArea: React.FC<TypingAreaProps> = ({
       e.key === 'End'
     ) {
       e.preventDefault();
+      return;
+    }
+
+    // Word-based navigation for standard typing modes
+    if (!isZenMode) {
+      // Space key: immediately advance to next word
+      if (e.key === ' ' || e.code === 'Space') {
+        e.preventDefault();
+        onSpacePress?.();
+        return;
+      }
+
+      // Backspace at the beginning of empty word: return to previous word
+      if (e.key === 'Backspace' && currentInput.length === 0) {
+        e.preventDefault();
+        onBackspaceAtWordStart?.();
+        return;
+      }
     }
   };
 
-  const wordTokens = useMemo<WordToken[]>(() => {
-    if (!targetText) return [];
-    const rawWords = targetText.split(' ');
-    const tokens: WordToken[] = [];
-    let currentIdx = 0;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
 
-    for (let i = 0; i < rawWords.length; i++) {
-      tokens.push({
-        word: rawWords[i],
-        startIndex: currentIdx,
-      });
-      currentIdx += rawWords[i].length + 1;
+    if (isZenMode) {
+      onZenChange?.(val);
+      onTextChange?.(val);
+      return;
     }
-    return tokens;
-  }, [targetText]);
+
+    // Check for space key typed on mobile virtual keyboards
+    if (val.endsWith(' ')) {
+      const trimmedVal = val.slice(0, -1);
+      if (trimmedVal !== currentInput) {
+        onWordChange?.(trimmedVal);
+      }
+      onSpacePress?.();
+      return;
+    }
+
+    if (val.includes(' ')) {
+      const parts = val.split(' ');
+      onWordChange?.(parts[0]);
+      onSpacePress?.();
+      return;
+    }
+
+    if (onWordChange) {
+      onWordChange(val);
+    } else {
+      onTextChange?.(val);
+    }
+  };
+
+  const resolvedTargetWords = useMemo<string[]>(() => {
+    if (targetWords && targetWords.length > 0) return targetWords;
+    if (!targetText) return [];
+    return targetText.split(' ');
+  }, [targetWords, targetText]);
 
   const zenWords = useMemo<string[]>(() => {
-    if (!isZenMode || !typedText) return [];
-    return typedText.split(' ');
-  }, [isZenMode, typedText]);
+    const text = zenTypedText || typedText;
+    if (!isZenMode || !text) return [];
+    return text.split(' ');
+  }, [isZenMode, zenTypedText, typedText]);
 
   const fontSizeClass = FONT_SIZE_CLASSES[fontSize];
+  const inputValue = isZenMode ? (zenTypedText || typedText) : currentInput;
 
   return (
     <div className="w-[95%] mx-auto flex flex-col items-center">
       {/* Borderless Full-Width Typing Workspace */}
       <div className="w-full bg-transparent px-0 py-0">
-        {/* Header: Timer + Status + Accent Progress Bar */}
+        {/* Header: Timer + Sound Toggle + Progress */}
         {headerSlot && <div className="mb-3">{headerSlot}</div>}
 
         {/* Interactive Typing Surface */}
@@ -204,12 +269,12 @@ export const TypingArea: React.FC<TypingAreaProps> = ({
           className="w-full relative select-none cursor-text"
           aria-label="Typing practice workspace. Click or tap to focus."
         >
-          {/* Unified Desktop & Mobile Accessible Input */}
+          {/* Accessible Hidden Input handling desktop and virtual keyboards */}
           <input
             ref={inputRef}
             type="text"
-            value={typedText}
-            onChange={(e) => onTextChange(e.target.value)}
+            value={inputValue}
+            onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             onFocus={() => updateFocus(true)}
             onBlur={() => updateFocus(false)}
@@ -237,7 +302,7 @@ export const TypingArea: React.FC<TypingAreaProps> = ({
           >
             {isZenMode ? (
               <div className="flex flex-wrap items-baseline px-1">
-                {typedText.length === 0 ? (
+                {inputValue.length === 0 ? (
                   <span className="relative inline-flex items-center text-secondary">
                     <span
                       ref={activeCharRef}
@@ -265,50 +330,85 @@ export const TypingArea: React.FC<TypingAreaProps> = ({
                 )}
               </div>
             ) : (
-              <div className="flex flex-wrap px-1">
-                {wordTokens.map((token, wordIdx) => {
-                  const isLastWord = wordIdx === wordTokens.length - 1;
-                  const spaceGlobalIndex = token.startIndex + token.word.length;
-                  const isActiveWord =
-                    !isCompleted &&
-                    currentIndex >= token.startIndex &&
-                    currentIndex < spaceGlobalIndex;
+              <div className="flex flex-wrap items-baseline gap-y-1.5 px-1">
+                {resolvedTargetWords.map((targetWord, wordIdx) => {
+                  const isPastWord = wordIdx < currentWordIndex;
+                  const isActiveWord = wordIdx === currentWordIndex && !isCompleted;
+                  const status = wordStatuses[wordIdx];
+
+                  const typedWord = isActiveWord
+                    ? currentInput
+                    : typedWords[wordIdx] || '';
+
+                  // Mark word with red underline if it was committed but incorrect or skipped
+                  const isIncorrectWord =
+                    isPastWord && (status === 'incorrect' || status === 'skipped');
+
+                  const displayLength = Math.max(targetWord.length, typedWord.length);
 
                   return (
-                    <React.Fragment key={`word-${token.startIndex}`}>
+                    <React.Fragment key={`word-${wordIdx}`}>
                       <span
-                        className={`inline-block whitespace-nowrap rounded px-1 -mx-1 transition-colors duration-100 ${
+                        className={`relative inline-block whitespace-nowrap px-0.5 rounded transition-all duration-75 ${
+                          isIncorrectWord
+                            ? 'border-b-2 border-error pb-0.5'
+                            : ''
+                        } ${
                           isActiveWord
-                            ? 'bg-black/[0.06] dark:bg-white/[0.08]'
+                            ? 'bg-black/[0.04] dark:bg-white/[0.06] rounded'
                             : ''
                         }`}
                       >
-                        {token.word.split('').map((char, charOffset) => {
-                          const globalIdx = token.startIndex + charOffset;
+                        {Array.from({ length: displayLength }).map((_, charIdx) => {
+                          const isTargetChar = charIdx < targetWord.length;
+                          const targetChar = isTargetChar ? targetWord[charIdx] : '';
+                          const isTypedChar = charIdx < typedWord.length;
+                          const typedChar = isTypedChar ? typedWord[charIdx] : undefined;
+                          const isExtra = charIdx >= targetWord.length;
+                          const isSkipped = isPastWord && !isTypedChar;
+
+                          // Caret positioning
+                          const isCaretHere =
+                            isActiveWord &&
+                            (charIdx === typedWord.length ||
+                              (typedWord.length >= targetWord.length &&
+                                charIdx === displayLength - 1));
+
+                          const isAtEnd =
+                            isActiveWord &&
+                            typedWord.length >= targetWord.length &&
+                            charIdx === displayLength - 1;
+
                           return (
                             <TypingCharacter
-                              key={`char-${globalIdx}`}
-                              targetChar={char}
-                              typedChar={typedText[globalIdx]}
-                              isCurrent={globalIdx === currentIndex}
+                              key={`char-${wordIdx}-${charIdx}`}
+                              targetChar={targetChar}
+                              typedChar={typedChar}
+                              isCurrent={isCaretHere}
                               isCompleted={isCompleted}
                               isInActiveWord={isActiveWord}
-                              activeRef={activeCharRef}
+                              isSkipped={isSkipped}
+                              isExtra={isExtra}
+                              isAtEnd={isAtEnd}
+                              activeRef={isCaretHere ? activeCharRef : undefined}
                             />
                           );
                         })}
+
+                        {/* Caret fallback when word is empty and cursor is at position 0 */}
+                        {isActiveWord && displayLength === 0 && (
+                          <span
+                            ref={activeCharRef}
+                            className="inline-block w-[2px] h-[1.15em] bg-accent rounded-full animate-caret align-middle"
+                            aria-hidden="true"
+                          />
+                        )}
                       </span>
 
-                      {!isLastWord && (
-                        <span className="inline-block">
-                          <TypingCharacter
-                            key={`space-${spaceGlobalIndex}`}
-                            targetChar=" "
-                            typedChar={typedText[spaceGlobalIndex]}
-                            isCurrent={spaceGlobalIndex === currentIndex}
-                            isCompleted={isCompleted}
-                            activeRef={activeCharRef}
-                          />
+                      {/* Space separator between words */}
+                      {wordIdx < resolvedTargetWords.length - 1 && (
+                        <span className="inline-block select-none text-[#6B7280] dark:text-[#9CA3AF]">
+                          &nbsp;
                         </span>
                       )}
                     </React.Fragment>
