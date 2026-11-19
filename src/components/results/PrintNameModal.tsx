@@ -82,14 +82,12 @@ export const PrintNameModal: React.FC<PrintNameModalProps> = ({
 
   return createPortal(
     <div className="t4type-screen-only">
-      {/* Full-viewport translucent backdrop (z-index 1000) */}
       <div
         className="fixed inset-0 z-[1000] bg-[rgba(0,0,0,0.65)]"
         aria-hidden="true"
         onClick={onClose}
       />
 
-      {/* Centered opaque modal layer (z-index 1001) */}
       <div
         className="fixed inset-0 z-[1001] flex items-center justify-center p-4 pointer-events-none"
         role="dialog"
@@ -101,7 +99,6 @@ export const PrintNameModal: React.FC<PrintNameModalProps> = ({
           className="pointer-events-auto w-full max-w-md rounded-2xl bg-[#FFFFFF] dark:bg-[#202020] text-[#222222] dark:text-[#E5E5E5] border border-[#E5E5E5] dark:border-[#383838] shadow-2xl p-6 space-y-5 text-left"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Header */}
           <div className="flex items-start justify-between gap-3 pb-3 border-b border-[#E5E5E5] dark:border-[#383838]">
             <div>
               <h2
@@ -127,7 +124,6 @@ export const PrintNameModal: React.FC<PrintNameModalProps> = ({
             </button>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} noValidate className="space-y-4">
             <div className="space-y-1.5">
               <div className="flex items-center justify-between text-xs font-sans">

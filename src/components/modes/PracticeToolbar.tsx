@@ -44,7 +44,6 @@ export const PracticeToolbar: React.FC<PracticeToolbarProps> = ({
       className="w-full max-w-4xl mx-auto mb-3 sm:mb-4 flex flex-col items-center gap-2.5"
       aria-label="Practice Configuration"
     >
-      {/* Unified Control Bar: Modes (left) + Text Options (right) */}
       <div className="w-full rounded-2xl bg-surface border border-border px-3 py-2 sm:px-5 sm:py-2 flex flex-col lg:flex-row items-center justify-between gap-2.5">
         <ModeSelector mode={config.mode} onSelectMode={onSelectMode} />
 
@@ -58,7 +57,6 @@ export const PracticeToolbar: React.FC<PracticeToolbarProps> = ({
         />
       </div>
 
-      {/* Mode Sub-Options Pills */}
       <div className="w-full flex items-center justify-center">
         <ModeConfiguration
           config={config}

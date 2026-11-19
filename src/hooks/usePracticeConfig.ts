@@ -63,7 +63,7 @@ export function usePracticeConfig() {
     try {
       localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(config));
     } catch {
-      // Ignore storage errors
+      void 0;
     }
   }, [config]);
 

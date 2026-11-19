@@ -20,7 +20,6 @@ export function useTypingTimer({
   const expiredFiredRef = useRef(false);
   const onExpireRef = useRef(onExpire);
 
-  // Keep latest callback without restarting active intervals
   useEffect(() => {
     onExpireRef.current = onExpire;
   }, [onExpire]);
@@ -32,7 +31,6 @@ export function useTypingTimer({
     }
   }, []);
 
-  // Sync remainingSeconds when duration changes while timer hasn't started
   useEffect(() => {
     if (!isRunning && startTimestampRef.current === null) {
       setRemainingSeconds(durationSeconds);
@@ -40,7 +38,6 @@ export function useTypingTimer({
   }, [durationSeconds, isRunning]);
 
   const start = useCallback(() => {
-    // Prevent running multiple timers simultaneously
     if (intervalRef.current !== null || startTimestampRef.current !== null) {
       return;
     }
@@ -106,7 +103,6 @@ export function useTypingTimer({
     [clearTimerInterval, durationSeconds]
   );
 
-  // Clean up interval on unmount
   useEffect(() => {
     return () => {
       clearTimerInterval();
@@ -122,4 +118,3 @@ export function useTypingTimer({
     reset,
   };
 }
-

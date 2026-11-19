@@ -8,20 +8,13 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>T4Type &mdash; Minimalist Typing Practice</title>
     <script>
-      (function() {
-        try {
-          var theme = localStorage.getItem('t4type-theme');
-          if (theme === 'light') {
-            document.documentElement.classList.add('light');
-            document.documentElement.classList.remove('dark');
-            document.documentElement.setAttribute('data-theme', 'light');
-          } else {
-            document.documentElement.classList.add('dark');
-            document.documentElement.classList.remove('light');
-            document.documentElement.setAttribute('data-theme', 'dark');
-          }
-        } catch (e) {}
-      })();
+      try {
+        const theme = localStorage.getItem('t4type-theme');
+        const isLight = theme === 'light';
+        document.documentElement.classList.toggle('light', isLight);
+        document.documentElement.classList.toggle('dark', !isLight);
+        document.documentElement.setAttribute('data-theme', isLight ? 'light' : 'dark');
+      } catch {}
     </script>
   </head>
   <body>

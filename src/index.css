@@ -75,7 +75,6 @@ a {
   transition-timing-function: ease;
 }
 
-/* Caret blinking keyframe for typing cursor */
 @keyframes cursorBlink {
   0%, 100% {
     opacity: 1;

@@ -75,7 +75,6 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
           </span>
         </div>
 
-        {/* Full-width Accent Bar / Time Progress */}
         <div className="w-full h-1 bg-elevated rounded-full overflow-hidden mt-2.5">
           <div
             className={`h-full rounded-full transition-all duration-300 ${
@@ -121,7 +120,6 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
     );
   }
 
-  // Words, Quotes, Custom: clean word progress + accent progress bar
   const totalWords = totalWordsCount ?? (targetText ? targetText.trim().split(/\s+/).length : 0);
   const completedWords = currentWordIndex !== undefined ? currentWordIndex : typedWordsCount;
   const progressPercent =

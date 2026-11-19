@@ -34,7 +34,6 @@ export const TypingCharacter: React.FC<TypingCharacterProps> = React.memo(
 
     const isSpace = targetChar === ' ';
 
-    // Determine visual styling based on character state
     let colorClass = isInActiveWord
       ? 'text-[#111827] dark:text-[#F8FAFC]'
       : 'text-[#6B7280] dark:text-[#9CA3AF]';
@@ -59,7 +58,6 @@ export const TypingCharacter: React.FC<TypingCharacterProps> = React.memo(
         ref={isCurrent ? activeRef : undefined}
         className="relative inline-block select-none transition-colors duration-75"
       >
-        {/* Dynamic Caret tracking current typing position */}
         {isCurrent && !isCompleted && (
           <span
             className={`absolute ${

@@ -63,7 +63,6 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
         className="w-full max-w-md rounded-2xl bg-surface border border-border p-6 space-y-6"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-border/70">
           <h2 id="settings-title" className="text-base font-semibold text-primary font-sans">
             Preferences
@@ -78,7 +77,6 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
           </button>
         </div>
 
-        {/* Font Size */}
         <div className="space-y-2">
           <span className="block text-xs font-medium text-secondary font-sans">
             Font size
@@ -105,7 +103,6 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
           </div>
         </div>
 
-        {/* Difficulty */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-secondary font-sans">
@@ -138,7 +135,6 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
           </div>
         </div>
 
-        {/* Sound & Theme */}
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-2">
             <span className="block text-xs font-medium text-secondary font-sans">
@@ -195,7 +191,6 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
           </div>
         </div>
 
-        {/* Footer */}
         <div className="pt-3 border-t border-border/70 flex items-center justify-between text-xs text-secondary font-sans">
           <span>Saved locally in browser</span>
           <span className="font-mono text-[11px]">Esc to close</span>

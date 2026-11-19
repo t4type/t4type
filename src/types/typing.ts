@@ -32,8 +32,8 @@ export interface QuoteItem {
 }
 
 export interface TypingStats {
-  wpm: number | null; // null before typing starts or before meaningful elapsed time
-  accuracy: number | null; // null when total is 0
+  wpm: number | null;
+  accuracy: number | null;
   correct: number;
   incorrect: number;
   total: number;
@@ -42,6 +42,7 @@ export interface TypingStats {
 export interface TestResult {
   wpm: number;
   accuracy: number;
+  netSpeed: number;
   correct: number;
   incorrect: number;
   total: number;

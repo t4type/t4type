@@ -63,17 +63,14 @@ export const ReportPreviewModal: React.FC<ReportPreviewModalProps> = ({
 
   return (
     <>
-      {/* Screen-only Modal Portal (hidden during @media print) */}
       {createPortal(
         <div className="t4type-screen-only">
-          {/* Full-viewport translucent backdrop (z-index 1000) */}
           <div
             className="fixed inset-0 z-[1000] bg-[rgba(0,0,0,0.65)]"
             aria-hidden="true"
             onClick={onClose}
           />
 
-          {/* Centered opaque preview modal layer (z-index 1001) */}
           <div
             className="fixed inset-0 z-[1001] flex items-center justify-center p-3 sm:p-6 pointer-events-none"
             role="dialog"
@@ -84,7 +81,6 @@ export const ReportPreviewModal: React.FC<ReportPreviewModalProps> = ({
               className="pointer-events-auto w-full max-w-3xl max-h-[92vh] flex flex-col rounded-2xl bg-[#FFFFFF] dark:bg-[#202020] border border-[#E5E5E5] dark:border-[#383838] shadow-2xl overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Solid Opaque Modal Header */}
               <div className="px-4 sm:px-6 py-3.5 bg-[#FFFFFF] dark:bg-[#202020] border-b border-[#E5E5E5] dark:border-[#383838] flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <h2
@@ -128,7 +124,6 @@ export const ReportPreviewModal: React.FC<ReportPreviewModalProps> = ({
                 </div>
               </div>
 
-              {/* Scrollable Opaque Sheet Container */}
               <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-[#F7F7F5] dark:bg-[#181818]">
                 <div className="w-full max-w-[720px] mx-auto bg-[#FFFFFF] rounded-lg shadow-lg p-6 sm:p-10 border border-[#E5E5E5] dark:border-[#383838]">
                   <PrintableReport
@@ -144,7 +139,6 @@ export const ReportPreviewModal: React.FC<ReportPreviewModalProps> = ({
         document.body
       )}
 
-      {/* Dedicated Print Root Portal (visible ONLY inside @media print) */}
       {createPortal(
         <div id="t4type-print-root">
           <PrintableReport

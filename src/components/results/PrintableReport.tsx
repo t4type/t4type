@@ -1,6 +1,7 @@
 import React from 'react';
 import { formatTime } from '../../utils/format';
 import { formatReportDate, formatReportTime } from '../../utils/report';
+import { BrandLogo } from '../common/BrandLogo';
 import type { TestResult } from '../../types/typing';
 
 interface PrintableReportProps {
@@ -54,23 +55,21 @@ export const PrintableReport: React.FC<PrintableReportProps> = ({
       className="t4type-a4-report bg-[#FFFFFF] text-[#0F172A] font-sans leading-normal"
       aria-label="Printable Typing Performance Report"
     >
-      {/* Restrained Blue & Yellow Top Accent Strip */}
       <div className="flex w-full h-1.5 mb-5" aria-hidden="true">
-        <div className="w-3/4 bg-blue-700" />
+        <div className="w-3/4 bg-slate-900" />
         <div className="w-1/4 bg-amber-500" />
       </div>
 
-      {/* HEADER */}
       <header className="flex flex-wrap items-start justify-between gap-4 pb-4 mb-6 border-b-2 border-slate-900">
         <div>
-          <div className="flex items-baseline gap-2 mb-1">
-            <span className="text-lg font-bold tracking-tight text-slate-900">
-              T4<span className="text-blue-700">Type</span>
-            </span>
-            <span className="text-xs text-slate-500 font-medium">
-              t4type.com
-            </span>
-          </div>
+          <BrandLogo
+            variant="horizontal"
+            size="sm"
+            showDomain={true}
+            theme="light"
+            className="h-7 w-auto mb-2"
+            ariaLabel="T4Type logo"
+          />
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 uppercase">
             TYPING PERFORMANCE REPORT
           </h1>
@@ -78,7 +77,7 @@ export const PrintableReport: React.FC<PrintableReportProps> = ({
 
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-slate-300 bg-[#F8FAFC]">
           <span
-            className="w-2 h-2 rounded-full bg-blue-700 shrink-0"
+            className="w-2 h-2 rounded-full bg-emerald-600 shrink-0"
             aria-hidden="true"
           />
           <span className="text-xs font-semibold tracking-wider text-slate-800 uppercase">
@@ -87,7 +86,6 @@ export const PrintableReport: React.FC<PrintableReportProps> = ({
         </div>
       </header>
 
-      {/* PARTICIPANT DETAILS */}
       <section className="mb-6" aria-label="Participant Details">
         <h2 className="text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-2">
           Participant Details
@@ -131,35 +129,48 @@ export const PrintableReport: React.FC<PrintableReportProps> = ({
         </div>
       </section>
 
-      {/* MAIN PERFORMANCE */}
       <section className="mb-6" aria-label="Main Performance">
         <h2 className="text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-2">
           Main Performance
         </h2>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="p-5 rounded border border-slate-300 border-t-4 border-t-blue-700 bg-white text-center">
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-600">
-              Typing Speed (WPM)
+        <div className="grid grid-cols-1 sm:grid-cols-3 print:grid-cols-3 gap-3 sm:gap-4">
+          <div className="p-4 rounded border border-slate-300 border-t-4 border-t-amber-500 bg-white text-center flex flex-col justify-between">
+            <p className="text-[11px] font-bold uppercase tracking-widest text-slate-600">
+              WPM
             </p>
-            <p className="text-5xl font-bold font-mono tabular-nums text-blue-700 tracking-tight my-2">
+            <p className="text-4xl font-bold font-mono tabular-nums text-amber-600 tracking-tight my-2">
               {result.wpm}
             </p>
-            <p className="text-xs text-slate-500">Words per minute</p>
+            <p className="text-[11px] text-slate-500">Words per minute</p>
           </div>
 
-          <div className="p-5 rounded border border-slate-300 border-t-4 border-t-amber-500 bg-white text-center">
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-600">
+          <div className="p-4 rounded border border-slate-300 border-t-4 border-t-blue-700 bg-white text-center flex flex-col justify-between">
+            <p className="text-[11px] font-bold uppercase tracking-widest text-slate-600">
               Accuracy
             </p>
-            <p className="text-5xl font-bold font-mono tabular-nums text-slate-900 tracking-tight my-2">
+            <p className="text-4xl font-bold font-mono tabular-nums text-slate-900 tracking-tight my-2">
               {result.accuracy}%
             </p>
-            <p className="text-xs text-slate-500">Character precision</p>
+            <p className="text-[11px] text-slate-500">Character precision</p>
+          </div>
+
+          <div className="p-4 rounded border border-slate-300 border-t-4 border-t-green-600 bg-white text-center flex flex-col justify-between">
+            <p className="text-[11px] font-bold uppercase tracking-widest text-slate-600">
+              Net Speed
+            </p>
+            <p className="inline-flex items-baseline justify-center gap-1 my-2 whitespace-nowrap">
+              <span className="text-4xl font-bold font-mono tabular-nums text-green-700 tracking-tight">
+                {result.netSpeed}
+              </span>
+              <span className="text-xs font-bold font-sans text-green-700/80 uppercase tracking-wider">
+                WPM
+              </span>
+            </p>
+            <p className="text-[11px] text-slate-500">Adjusted speed</p>
           </div>
         </div>
       </section>
 
-      {/* SESSION DETAILS */}
       <section className="mb-8" aria-label="Session Details">
         <h2 className="text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-2">
           Session Details
@@ -188,7 +199,6 @@ export const PrintableReport: React.FC<PrintableReportProps> = ({
         </div>
       </section>
 
-      {/* FOOTER & DISCLAIMER */}
       <footer className="pt-4 border-t border-slate-300">
         <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-800 font-semibold">
           <span>T4Type.com | Free Typing Practice</span>

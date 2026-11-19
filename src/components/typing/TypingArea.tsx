@@ -77,21 +77,18 @@ export const TypingArea: React.FC<TypingAreaProps> = ({
     onFocusChange?.(focused);
   };
 
-  // Focus input automatically when mounting, closing modals, or triggered externally
   useEffect(() => {
     if (!isModalOpen && !isCompleted) {
       inputRef.current?.focus();
     }
   }, [isModalOpen, isCompleted, focusTrigger]);
 
-  // Reset scroll when targetText or typedText clears
   useEffect(() => {
     if (typedText.length === 0 && currentWordIndex === 0 && textViewportRef.current) {
       textViewportRef.current.scrollTop = 0;
     }
   }, [typedText.length, currentWordIndex, targetText]);
 
-  // Smoothly keep active character line visible inside scrollable viewport
   useEffect(() => {
     const container = textViewportRef.current;
     const activeEl = activeCharRef.current;
@@ -152,7 +149,6 @@ export const TypingArea: React.FC<TypingAreaProps> = ({
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     initAudioContext();
 
-    // Restart shortcut: Tab + Enter
     if (e.key === 'Tab') {
       e.preventDefault();
       setTabArmed(true);
@@ -177,7 +173,6 @@ export const TypingArea: React.FC<TypingAreaProps> = ({
       setTabArmed(false);
     }
 
-    // Prevent navigation keys from displacing hidden input cursor
     if (
       e.key === 'ArrowLeft' ||
       e.key === 'ArrowRight' ||
@@ -190,16 +185,13 @@ export const TypingArea: React.FC<TypingAreaProps> = ({
       return;
     }
 
-    // Word-based navigation for standard typing modes
     if (!isZenMode) {
-      // Space key: immediately advance to next word
       if (e.key === ' ' || e.code === 'Space') {
         e.preventDefault();
         onSpacePress?.();
         return;
       }
 
-      // Backspace at the beginning of empty word: return to previous word
       if (e.key === 'Backspace' && currentInput.length === 0) {
         e.preventDefault();
         onBackspaceAtWordStart?.();
@@ -217,7 +209,6 @@ export const TypingArea: React.FC<TypingAreaProps> = ({
       return;
     }
 
-    // Check for space key typed on mobile virtual keyboards
     if (val.endsWith(' ')) {
       const trimmedVal = val.slice(0, -1);
       if (trimmedVal !== currentInput) {
@@ -258,18 +249,14 @@ export const TypingArea: React.FC<TypingAreaProps> = ({
 
   return (
     <div className="w-[95%] mx-auto flex flex-col items-center">
-      {/* Borderless Full-Width Typing Workspace */}
       <div className="w-full bg-transparent px-0 py-0">
-        {/* Header: Timer + Sound Toggle + Progress */}
         {headerSlot && <div className="mb-3">{headerSlot}</div>}
 
-        {/* Interactive Typing Surface */}
         <div
           onClick={handleContainerClick}
           className="w-full relative select-none cursor-text"
           aria-label="Typing practice workspace. Click or tap to focus."
         >
-          {/* Accessible Hidden Input handling desktop and virtual keyboards */}
           <input
             ref={inputRef}
             type="text"
@@ -292,7 +279,6 @@ export const TypingArea: React.FC<TypingAreaProps> = ({
             className="absolute inset-0 w-full h-full opacity-0 pointer-events-auto cursor-text z-10"
           />
 
-          {/* Scrollable Text Viewport */}
           <div
             ref={textViewportRef}
             className={`w-full max-w-full max-h-[200px] sm:max-h-[240px] overflow-y-auto overflow-x-hidden no-scrollbar text-left font-mono ${fontSizeClass} tracking-wide break-words pointer-events-none transition-opacity duration-150 ${
@@ -340,7 +326,6 @@ export const TypingArea: React.FC<TypingAreaProps> = ({
                     ? currentInput
                     : typedWords[wordIdx] || '';
 
-                  // Mark word with red underline if it was committed but incorrect or skipped
                   const isIncorrectWord =
                     isPastWord && (status === 'incorrect' || status === 'skipped');
 
@@ -367,7 +352,6 @@ export const TypingArea: React.FC<TypingAreaProps> = ({
                           const isExtra = charIdx >= targetWord.length;
                           const isSkipped = isPastWord && !isTypedChar;
 
-                          // Caret positioning
                           const isCaretHere =
                             isActiveWord &&
                             (charIdx === typedWord.length ||
@@ -395,7 +379,6 @@ export const TypingArea: React.FC<TypingAreaProps> = ({
                           );
                         })}
 
-                        {/* Caret fallback when word is empty and cursor is at position 0 */}
                         {isActiveWord && displayLength === 0 && (
                           <span
                             ref={activeCharRef}
@@ -405,7 +388,6 @@ export const TypingArea: React.FC<TypingAreaProps> = ({
                         )}
                       </span>
 
-                      {/* Space separator between words */}
                       {wordIdx < resolvedTargetWords.length - 1 && (
                         <span className="inline-block select-none text-[#6B7280] dark:text-[#9CA3AF]">
                           &nbsp;
@@ -418,7 +400,6 @@ export const TypingArea: React.FC<TypingAreaProps> = ({
             )}
           </div>
 
-          {/* Quote Author Attribution */}
           {quoteAuthor && (
             <div className="mt-3 text-right text-xs sm:text-sm font-sans text-secondary italic pointer-events-none">
               &mdash; {quoteAuthor}
@@ -427,7 +408,6 @@ export const TypingArea: React.FC<TypingAreaProps> = ({
         </div>
       </div>
 
-      {/* Bottom Restart Action & Shortcut */}
       <div className="mt-3.5 flex flex-wrap items-center justify-center gap-3 text-xs text-secondary font-sans">
         <button
           type="button"

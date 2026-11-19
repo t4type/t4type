@@ -1,5 +1,6 @@
 import React from 'react';
-import { Keyboard, Sun, Moon, Settings } from 'lucide-react';
+import { Sun, Moon, Settings } from 'lucide-react';
+import { BrandLogo } from '../common/BrandLogo';
 import type { Theme } from '../../types/theme';
 
 interface NavbarProps {
@@ -7,6 +8,8 @@ interface NavbarProps {
   onToggleTheme: () => void;
   onOpenSettings: () => void;
   onGoPractice: () => void;
+  currentPath?: string;
+  onNavigate?: (path: string) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -14,55 +17,85 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleTheme,
   onOpenSettings,
   onGoPractice,
+  currentPath = '/',
+  onNavigate,
 }) => {
   return (
     <header className="w-full border-b border-border bg-bg transition-colors">
       <nav
         aria-label="Main Navigation"
-        className="w-[96vw] sm:w-[94vw] lg:w-[92vw] xl:w-[90vw] max-w-[1700px] mx-auto h-14 flex items-center justify-between"
+        className="w-[96vw] sm:w-[94vw] lg:w-[92vw] xl:w-[90vw] max-w-[1700px] mx-auto h-14 flex items-center justify-between px-1 sm:px-0"
       >
-        {/* Left: Distinctive T4Type Brand Mark */}
         <a
           href="/"
           onClick={(e) => {
             e.preventDefault();
             onGoPractice();
           }}
-          className="group flex items-center gap-2.5 rounded-lg py-1 pr-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          className="group flex items-center rounded-lg py-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent shrink-0 transition-opacity hover:opacity-90"
           aria-label="T4Type Home"
         >
-          <span className="w-8 h-8 rounded-lg flex items-center justify-center bg-accent text-[#111317] shadow-sm group-hover:bg-accent-hover transition-colors">
-            <Keyboard className="w-4 h-4 stroke-[2.2]" aria-hidden="true" />
-          </span>
-          <span className="text-lg font-bold tracking-tight text-primary font-sans select-none">
-            T4<span className="text-accent">Type</span>
-          </span>
+          <BrandLogo
+            variant="horizontal"
+            size="sm"
+            className="h-7 sm:h-8 w-auto"
+            ariaLabel="T4Type"
+          />
         </a>
 
-        {/* Right: Circular Theme Toggle & Settings */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+          {currentPath !== '/' && (
+            <a
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                onGoPractice();
+              }}
+              className="text-xs sm:text-sm font-medium text-accent hover:text-accent-hover px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent shrink-0"
+            >
+              Practice
+            </a>
+          )}
+
+          <a
+            href="/about"
+            onClick={(e) => {
+              e.preventDefault();
+              if (onNavigate) {
+                onNavigate('/about');
+              }
+            }}
+            className={`text-xs sm:text-sm font-medium px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent shrink-0 ${
+              currentPath === '/about'
+                ? 'text-accent'
+                : 'text-secondary hover:text-primary'
+            }`}
+          >
+            About
+          </a>
+
           <button
             type="button"
             onClick={onToggleTheme}
-            className="w-9 h-9 rounded-full text-secondary hover:text-primary bg-surface border border-border hover:border-accent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent flex items-center justify-center"
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full text-secondary hover:text-primary bg-surface border border-border hover:border-accent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent flex items-center justify-center shrink-0"
             aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
             title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
           >
             {theme === 'dark' ? (
-              <Sun className="w-4 h-4" aria-hidden="true" />
+              <Sun className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
             ) : (
-              <Moon className="w-4 h-4" aria-hidden="true" />
+              <Moon className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
             )}
           </button>
 
           <button
             type="button"
             onClick={onOpenSettings}
-            className="w-9 h-9 rounded-full text-secondary hover:text-primary bg-surface border border-border hover:border-accent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent flex items-center justify-center"
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full text-secondary hover:text-primary bg-surface border border-border hover:border-accent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent flex items-center justify-center shrink-0"
             aria-label="Open settings"
             title="Settings"
           >
-            <Settings className="w-4 h-4" aria-hidden="true" />
+            <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
           </button>
         </div>
       </nav>

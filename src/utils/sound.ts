@@ -1,10 +1,6 @@
 let audioCtx: AudioContext | null = null;
 let masterGain: GainNode | null = null;
 
-/**
- * Initializes or resumes the shared AudioContext on user interaction
- * to comply with browser autoplay restrictions.
- */
 export function initAudioContext(): AudioContext | null {
   if (typeof window === 'undefined') return null;
   try {
@@ -23,30 +19,19 @@ export function initAudioContext(): AudioContext | null {
       audioCtx.resume().catch(() => {});
     }
   } catch {
-    // Fail gracefully
+    void 0;
   }
   return audioCtx;
 }
 
-/**
- * Generates a realistic, subtle mechanical keyboard keystroke sound.
- * Features:
- * - Crisp mechanical switch actuation transient
- * - Warm, resonant keycap bottom-out body ("thock")
- * - Subtle organic micro-pitch variation across keystrokes
- * - Distinct, gentle tone on typing errors
- */
 export function playKeySound(isError: boolean = false): void {
   try {
     const ctx = initAudioContext();
     if (!ctx || !masterGain) return;
 
     const now = ctx.currentTime;
-
-    // Organic micro-pitch variation (±5%) simulates different keycap positions
     const pitchOffset = isError ? 1 : 1 + (Math.random() - 0.5) * 0.1;
 
-    // --- Component 1: Keycap Body Resonance ("Thock") ---
     const bodyOsc = ctx.createOscillator();
     const bodyGain = ctx.createGain();
 
@@ -67,7 +52,6 @@ export function playKeySound(isError: boolean = false): void {
     bodyOsc.start(now);
     bodyOsc.stop(now + 0.04);
 
-    // --- Component 2: Switch Contact Snap (Mechanical Transient) ---
     const snapOsc = ctx.createOscillator();
     const snapGain = ctx.createGain();
 
@@ -88,6 +72,6 @@ export function playKeySound(isError: boolean = false): void {
     snapOsc.start(now);
     snapOsc.stop(now + 0.016);
   } catch {
-    // Silently ignore audio playback failures to never interrupt typing
+    void 0;
   }
 }

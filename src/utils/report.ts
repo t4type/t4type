@@ -1,6 +1,3 @@
-/**
- * Generates a unique local report reference ID (e.g., T4T-20261112-8A4C2F).
- */
 export function generateReportReference(timestamp: number): string {
   const date = new Date(timestamp);
   const year = date.getFullYear();
@@ -25,9 +22,6 @@ export function generateReportReference(timestamp: number): string {
   return `T4T-${year}${month}${day}-${suffix}`;
 }
 
-/**
- * Formats completion date cleanly for formal reports (e.g., November 12, 2026).
- */
 export function formatReportDate(timestamp: number): string {
   return new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
@@ -36,9 +30,6 @@ export function formatReportDate(timestamp: number): string {
   }).format(new Date(timestamp));
 }
 
-/**
- * Formats completion time cleanly for formal reports (e.g., 11:55:27 PM).
- */
 export function formatReportTime(timestamp: number): string {
   return new Intl.DateTimeFormat('en-US', {
     hour: '2-digit',
@@ -46,4 +37,3 @@ export function formatReportTime(timestamp: number): string {
     second: '2-digit',
   }).format(new Date(timestamp));
 }
-

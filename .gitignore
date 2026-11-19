@@ -1,15 +1,19 @@
 # Dependencies
-node_modules
-.pnpm-store
+node_modules/
+.pnpm-store/
 
 # Production build output
-dist
-dist-ssr
+dist/
+dist-ssr/
 *.local
 *.tsbuildinfo
 
+# Test and coverage output
+coverage/
+.nyc_output/
+
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -22,26 +26,24 @@ lerna-debug.log*
 .env.*
 !.env.example
 
-# OS files
+# Operating system files
 .DS_Store
 Thumbs.db
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-# ==============================================================================
-# Private Source Exclusions (Do not publish to public repository)
-# ==============================================================================
+# Temporary files
+*.tmp
+*.temp
 
-# Exclude entire data directory (word lists, quote banks)
+# Private source exclusions
 src/data/
-
-# Exclude core result calculation, WPM/accuracy scoring, and test finalization logic
 src/hooks/useTypingEngine.ts

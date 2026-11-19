@@ -42,7 +42,7 @@ export function usePracticeSettings() {
     try {
       localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
     } catch {
-      // Ignore storage quota errors
+      void 0;
     }
   }, [settings]);
 

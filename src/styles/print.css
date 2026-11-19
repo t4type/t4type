@@ -1,5 +1,3 @@
-/* Dedicated Print Stylesheet for T4Type A4 Typing Performance Report */
-
 @media screen {
   #t4type-print-root {
     display: none !important;
@@ -25,13 +23,11 @@
     print-color-adjust: exact !important;
   }
 
-  /* Completely exclude the interactive website shell and screen modals from printed output */
   #root,
   .t4type-screen-only {
     display: none !important;
   }
 
-  /* Render only the dedicated A4 report document */
   #t4type-print-root {
     display: block !important;
     width: 100% !important;
@@ -53,4 +49,3 @@
     page-break-after: avoid !important;
   }
 }
-

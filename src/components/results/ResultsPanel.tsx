@@ -68,7 +68,6 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
       className="w-full max-w-3xl mx-auto rounded-2xl bg-surface border border-border p-6 sm:p-10 flex flex-col items-center text-center select-none"
       aria-label="Session Results"
     >
-      {/* Header Badge */}
       <div className="mb-6 flex flex-wrap items-center justify-center gap-2">
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-elevated border border-border text-xs font-sans font-medium text-correct">
           <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" />
@@ -81,28 +80,40 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
         </span>
       </div>
 
-      {/* Hero Metrics: WPM & Accuracy */}
-      <div className="w-full grid grid-cols-2 gap-6 sm:gap-12 max-w-md mb-8">
-        <div className="flex flex-col items-center p-4 rounded-xl bg-bg border border-border/60">
+      <div className="w-full grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 max-w-2xl mb-8">
+        <div className="flex flex-col items-center justify-center p-4 sm:p-5 rounded-xl bg-bg border border-border/60">
           <span className="text-xs uppercase tracking-widest text-secondary font-sans font-medium">
             WPM
           </span>
-          <span className="text-4xl sm:text-6xl font-bold text-accent font-mono tabular-nums tracking-tight mt-1.5">
+          <span className="text-4xl sm:text-5xl md:text-6xl font-bold text-accent font-mono tabular-nums tracking-tight mt-1.5">
             {result.wpm}
           </span>
         </div>
 
-        <div className="flex flex-col items-center p-4 rounded-xl bg-bg border border-border/60">
+        <div className="flex flex-col items-center justify-center p-4 sm:p-5 rounded-xl bg-bg border border-border/60">
           <span className="text-xs uppercase tracking-widest text-secondary font-sans font-medium">
             Accuracy
           </span>
-          <span className="text-4xl sm:text-6xl font-bold text-primary font-mono tabular-nums tracking-tight mt-1.5">
+          <span className="text-4xl sm:text-5xl md:text-6xl font-bold text-primary font-mono tabular-nums tracking-tight mt-1.5">
             {result.accuracy}%
+          </span>
+        </div>
+
+        <div className="flex flex-col items-center justify-center p-4 sm:p-5 rounded-xl bg-bg border border-border/60">
+          <span className="text-xs uppercase tracking-widest text-secondary font-sans font-medium">
+            Net Speed
+          </span>
+          <span className="inline-flex items-baseline justify-center gap-1.5 mt-1.5 whitespace-nowrap">
+            <span className="text-4xl sm:text-5xl md:text-6xl font-bold text-correct font-mono tabular-nums tracking-tight">
+              {result.netSpeed}
+            </span>
+            <span className="text-xs sm:text-sm font-semibold text-correct/80 font-sans uppercase tracking-wider">
+              WPM
+            </span>
           </span>
         </div>
       </div>
 
-      {/* Detailed Breakdown */}
       <div className="w-full grid grid-cols-2 sm:grid-cols-4 gap-4 py-5 border-y border-border/70 mb-8 font-sans">
         <div className="flex flex-col items-center">
           <span className="text-xs text-secondary">Correct chars</span>
@@ -133,14 +144,12 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({
         </div>
       </div>
 
-      {/* Quote Author Attribution */}
       {result.quoteAuthor && (
         <p className="mb-8 text-xs sm:text-sm font-sans text-secondary italic">
           &mdash; {result.quoteAuthor}
         </p>
       )}
 
-      {/* Action Buttons */}
       <div className="flex flex-wrap items-center justify-center gap-3 w-full">
         <button
           type="button"
